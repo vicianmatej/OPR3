@@ -1,0 +1,23 @@
+meta {
+  name: Create Rating
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/api/ratings
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "score": 5,
+    "userId": 1,
+    "movieId": 1
+  }
+}

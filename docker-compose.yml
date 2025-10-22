@@ -1,0 +1,24 @@
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: favouriteLinksDB
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: favouriteLinksDB
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+          - favouriteLinksNetwork
+
+volumes:
+  mariadb_data:
+
+networks:
+  favouriteLinksNetwork:
+    driver: bridge

@@ -1,0 +1,26 @@
+meta {
+  name: Create Movie
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/api/movies
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Nový testovací film",
+    "description": "Popis nového filmu pro testování API",
+    "releaseYear": 2024,
+    "genre": "Drama",
+    "director": "Test Režisér",
+    "posterUrl": "https://example.com/test-poster.jpg"
+  }
+}
