@@ -2,11 +2,11 @@
 services:
   mariadb:
     image: mariadb:latest
-    container_name: favouriteLinksDB
+    container_name: movieDatabaseDB
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: favouriteLinksDB
+      MYSQL_DATABASE: movieDatabaseDB
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
@@ -14,11 +14,11 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
-          - favouriteLinksNetwork
+          - movieDatabaseNetwork
 
 volumes:
   mariadb_data:
 
 networks:
-  favouriteLinksNetwork:
+  movieDatabaseNetwork:
     driver: bridge

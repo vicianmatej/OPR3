@@ -3,10 +3,10 @@ package cz.osu.prf.kip.favouriteLinks.services;
 import cz.osu.prf.kip.favouriteLinks.dtos.RatingCreateDto;
 import cz.osu.prf.kip.favouriteLinks.model.entities.Movie;
 import cz.osu.prf.kip.favouriteLinks.model.entities.Rating;
-import cz.osu.prf.kip.favouriteLinks.model.entities.User;
+import cz.osu.prf.kip.favouriteLinks.model.entities.AppUser;
+import cz.osu.prf.kip.favouriteLinks.repositories.AppUserRepository;
 import cz.osu.prf.kip.favouriteLinks.repositories.MovieRepository;
 import cz.osu.prf.kip.favouriteLinks.repositories.RatingRepository;
-import cz.osu.prf.kip.favouriteLinks.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class RatingService {
     
     private final RatingRepository ratingRepository;
-    private final UserRepository userRepository;
+    private final AppUserRepository appUserRepository;
     private final MovieRepository movieRepository;
 
     public Rating createOrUpdateRating(RatingCreateDto createDto) {
@@ -29,7 +29,7 @@ public class RatingService {
                 createDto.getMovieId(), createDto.getUserId());
 
         // Validace existence uživatele
-        User user = userRepository.findById(createDto.getUserId())
+        AppUser user = appUserRepository.findById(createDto.getUserId())
                 .orElseThrow(() -> {
                     log.error("Uživatel s ID {} nebyl nalezen", createDto.getUserId());
                     return new RuntimeException("Uživatel s ID " + createDto.getUserId() + " nebyl nalezen");
