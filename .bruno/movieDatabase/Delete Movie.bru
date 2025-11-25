@@ -1,0 +1,21 @@
+meta {
+  name: Delete Movie
+  type: http
+  seq: 10
+}
+
+delete {
+  url: http://localhost:8081/api/movies/1
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  Test smazání filmu
+  Očekávaný výsledek: HTTP 204 No Content
+  POZOR: Smaže film s ID 1!
+}

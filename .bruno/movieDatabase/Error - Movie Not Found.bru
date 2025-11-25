@@ -1,0 +1,20 @@
+meta {
+  name: Error - Movie Not Found
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://localhost:8081/api/movies/99999
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  Test ošetření chyb - neexistující film
+  Očekávaný výsledek: HTTP 404 + chybová zpráva
+}

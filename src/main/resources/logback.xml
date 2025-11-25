@@ -1,38 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOG_PATH" value="logs" />
-    <property name="LOG_FILE" value="favouriteLinks" />
-
-    <!-- Konzolový appender -->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-
-    <!-- Rolling file appender -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/${LOG_FILE}.log</file>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+    
+    <appender name="FILE_JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.json</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- denní rotace souborů -->
-            <fileNamePattern>${LOG_PATH}/${LOG_FILE}.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- uchovávat logy 30 dní -->
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}.json</fileNamePattern>
             <maxHistory>30</maxHistory>
-            <totalSizeCap>3GB</totalSizeCap>
         </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+    
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
     </appender>
 
-    <!-- Nastavení úrovně logování pro různé balíčky -->
-    <logger name="cz.osu.prf.kip.favouriteLinks" level="DEBUG" />
-    <logger name="org.springframework" level="INFO" />
-    <logger name="org.hibernate" level="INFO" />
+    <logger name="cz.osu.prf.kip.favouriteLinks" level="WARNING"/>
 
-    <!-- Root logger -->
+    <logger name="cz.osu.prf.kip.favouriteLinks.services" level="DEBUG"/>
+    <logger name="cz.osu.prf.kip.favouriteLinks.aop.ServiceLoggingAspect" level="DEBUG"/>
+
+    <logger name="cz.osu.prf.kip.favouriteLinks.controllers" level="DEBUG"/>
+    <logger name="cz.osu.prf.kip.favouriteLinks.aop.ControllerLoggingAspect" level="DEBUG"/>
+
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE_JSON"/>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>

@@ -1,0 +1,27 @@
+meta {
+  name: Validation - Invalid Year
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:8081/api/movies
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Test Film",
+    "releaseYear": 1800
+  }
+}
+
+docs {
+  Test validace - nevalidní rok
+  Očekávaný výsledek: HTTP 400 + chyba "Rok vydání musí být minimálně 1900"
+}

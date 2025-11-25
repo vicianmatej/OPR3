@@ -1,0 +1,29 @@
+meta {
+  name: Update Movie
+  type: http
+  seq: 9
+}
+
+put {
+  url: http://localhost:8081/api/movies/1
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Aktualizovaný film",
+    "description": "Nový popis",
+    "releaseYear": 2024,
+    "genre": "Thriller"
+  }
+}
+
+docs {
+  Test aktualizace filmu
+  Očekávaný výsledek: HTTP 200 + aktualizovaný film
+}

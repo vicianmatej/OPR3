@@ -1,7 +1,7 @@
 
 services:
   mariadb:
-    image: mariadb:latest
+    image: mariadb:11.4
     container_name: movieDatabaseDB
     restart: always
     environment:
@@ -14,7 +14,21 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
-          - movieDatabaseNetwork
+      - movieDatabaseNetwork
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.0
+    container_name: movieDatabase-keycloak
+    environment:
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+    command: start-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mariadb
+    networks:
+      - movieDatabaseNetwork
 
 volumes:
   mariadb_data:

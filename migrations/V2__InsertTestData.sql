@@ -1,7 +1,7 @@
 -- Vložení testovacích uživatelů
-INSERT INTO users (username, email, password, role) VALUES
-('admin', 'admin@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P2.nHc3Ov.3.m.', 'ADMIN'),
-('testuser', 'test@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P2.nHc3Ov.3.m.', 'USER');
+INSERT INTO app_user (email, password_hash) VALUES
+('admin@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P2.nHc3Ov.3.m.'),
+('test@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P2.nHc3Ov.3.m.');
 
 -- Vložení testovacích filmů
 INSERT INTO movies (title, description, release_year, genre, director, poster_url) VALUES
