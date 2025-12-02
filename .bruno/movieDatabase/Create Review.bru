@@ -1,0 +1,28 @@
+meta {
+  name: Create Review
+  type: http
+  seq: 11
+}
+
+post {
+  url: http://localhost:8081/api/reviews
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "reviewText": "Skvělý film, doporučuji!",
+    "movieId": 1
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.reviewText: eq Skvělý film, doporučuji!
+  res.body.movieId: eq 1
+}

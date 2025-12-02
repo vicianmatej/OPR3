@@ -18,7 +18,7 @@ export default function MovieSearch({ onSearch }: Props) {
   };
 
   return (
-    <div style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
+    <div style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ccc', borderRadius: '8px', maxWidth: '800px', margin: '0 auto 2rem' }}>
       <h3>Vyhledat filmy</h3>
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         <input

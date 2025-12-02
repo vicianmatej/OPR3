@@ -7,6 +7,8 @@ export interface Movie {
   director?: string;
   posterUrl?: string;
   createdAt?: string;
+  averageRating?: number;
+  ratingCount?: number;
 }
 
 export interface MovieCreate {
@@ -38,4 +40,26 @@ export interface RegisterData {
 export interface LoginResponse {
   token: string;
   email: string;
+}
+
+export interface Review {
+  id: number;
+  reviewText: string;
+  movieId: number;
+  movieTitle: string;
+  createdAt: string;
+}
+
+export interface ReviewCreate {
+  reviewText: string;
+  movieId: number;
+}
+
+export interface WatchlistItem {
+  id: number;
+  movieId: number;
+  movieTitle: string;
+  posterUrl?: string;
+  watched: boolean;
+  addedAt: string;
 }

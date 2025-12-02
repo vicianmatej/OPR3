@@ -10,15 +10,17 @@ import java.util.List;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
+    List<Movie> findByUserId(Long userId);
     List<Movie> findByTitleContainingIgnoreCase(String title);
     List<Movie> findByGenreIgnoreCase(String genre);
     List<Movie> findByReleaseYear(Integer releaseYear);
     
-    @Query("SELECT m FROM Movie m WHERE " +
+    @Query("SELECT m FROM Movie m WHERE m.user.id = :userId AND " +
            "(:title IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
            "(:genre IS NULL OR LOWER(m.genre) = LOWER(:genre)) AND " +
            "(:year IS NULL OR m.releaseYear = :year)")
-    List<Movie> findMoviesWithFilters(@Param("title") String title, 
+    List<Movie> findMoviesWithFilters(@Param("userId") Long userId,
+                                     @Param("title") String title, 
                                      @Param("genre") String genre, 
                                      @Param("year") Integer year);
 }

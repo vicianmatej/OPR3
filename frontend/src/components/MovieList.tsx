@@ -1,17 +1,9 @@
 import { useState, useEffect } from 'react';
 import { movieApi, ratingApi } from '../services/api';
 
-interface Movie {
-  id: number;
-  title: string;
-  description?: string;
-  releaseYear?: number;
-  genre?: string;
-  director?: string;
-  posterUrl?: string;
-  createdAt?: string;
-}
+import { Movie } from '../types';
 import RatingForm from './RatingForm';
+import MovieDetail from './MovieDetail';
 
 interface Props {
   userId?: number;
@@ -21,7 +13,7 @@ interface Props {
 export default function MovieList({ userId, searchParams }: Props) {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-  const [ratings, setRatings] = useState<Record<number, number>>({});
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
   useEffect(() => {
     loadMovies();
@@ -33,20 +25,10 @@ export default function MovieList({ userId, searchParams }: Props) {
         ? await movieApi.search(searchParams.title, searchParams.genre, searchParams.year)
         : await movieApi.getAll();
       setMovies(data);
-      data.forEach(movie => loadRating(movie.id));
     } catch (error) {
       console.error('Chyba při načítání filmů:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const loadRating = async (movieId: number) => {
-    try {
-      const { data } = await ratingApi.getAverage(movieId);
-      setRatings(prev => ({ ...prev, [movieId]: data }));
-    } catch (error) {
-      console.error('Chyba při načítání hodnocení:', error);
     }
   };
 
@@ -61,6 +43,7 @@ export default function MovieList({ userId, searchParams }: Props) {
   };
 
   if (loading) return <div>Načítání...</div>;
+  if (selectedMovieId) return <MovieDetail movieId={selectedMovieId} onClose={() => setSelectedMovieId(null)} />;
 
   return (
     <div>
@@ -72,11 +55,11 @@ export default function MovieList({ userId, searchParams }: Props) {
             <h3>{movie.title}</h3>
             <p>{movie.releaseYear} | {movie.genre}</p>
             <p>{movie.director}</p>
-            <p>{movie.description}</p>
-            {ratings[movie.id] !== undefined && (
-              <p><strong>Hodnocení: {ratings[movie.id].toFixed(1)}/10</strong></p>
+            {movie.averageRating && (
+              <p><strong>⭐ {movie.averageRating.toFixed(1)}/5</strong> ({movie.ratingCount} hodnocení)</p>
             )}
-            {userId && <RatingForm movieId={movie.id} userId={userId} onSuccess={() => loadRating(movie.id)} />}
+            <button onClick={() => setSelectedMovieId(movie.id)}>Detail</button>
+            {userId && <RatingForm movieId={movie.id} userId={userId} onSuccess={loadMovies} />}
             <button onClick={() => handleDelete(movie.id)} style={{ marginTop: '0.5rem' }}>Smazat</button>
           </div>
         ))}

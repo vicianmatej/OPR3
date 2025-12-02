@@ -24,3 +24,8 @@ body:json {
     "posterUrl": "https://example.com/test-poster.jpg"
   }
 }
+
+assert {
+  res.status: eq 201
+  res.body.title: eq Nový testovací film
+}

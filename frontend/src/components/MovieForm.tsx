@@ -36,7 +36,7 @@ export default function MovieForm({ onSuccess }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+    <form onSubmit={handleSubmit} style={{ marginBottom: '2rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
       <h2>Přidat film</h2>
       <input
         type="text"

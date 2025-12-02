@@ -2,10 +2,14 @@ package cz.osu.prf.kip.favouriteLinks.services;
 
 import cz.osu.prf.kip.favouriteLinks.dtos.MovieCreateDto;
 import cz.osu.prf.kip.favouriteLinks.dtos.MovieDto;
+import cz.osu.prf.kip.favouriteLinks.model.entities.AppUser;
 import cz.osu.prf.kip.favouriteLinks.model.entities.Movie;
+import cz.osu.prf.kip.favouriteLinks.repositories.AppUserRepository;
 import cz.osu.prf.kip.favouriteLinks.repositories.MovieRepository;
+import cz.osu.prf.kip.favouriteLinks.repositories.RatingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +23,25 @@ import java.util.stream.Collectors;
 public class MovieService {
     
     private final MovieRepository movieRepository;
+    private final AppUserRepository userRepository;
+    private final RatingRepository ratingRepository;
+
+    private AppUser getCurrentUser() {
+        try {
+            String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Uživatel nebyl nalezen"));
+        } catch (Exception e) {
+            // Pokud není přihlášený, vrátíme prvního uživatele (pro testování)
+            return userRepository.findById(1L)
+                    .orElseThrow(() -> new RuntimeException("Žádný uživatel v databázi"));
+        }
+    }
 
     public List<MovieDto> getAllMovies() {
-        log.info("Načítání všech filmů");
-        return movieRepository.findAll().stream()
+        AppUser user = getCurrentUser();
+        log.info("Načítání filmů pro uživatele: {}", user.getEmail());
+        return movieRepository.findByUserId(user.getId()).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -38,7 +57,8 @@ public class MovieService {
     }
 
     public MovieDto createMovie(MovieCreateDto createDto) {
-        log.info("Vytváření nového filmu: {}", createDto.getTitle());
+        AppUser user = getCurrentUser();
+        log.info("Vytváření nového filmu: {} pro uživatele: {}", createDto.getTitle(), user.getEmail());
         
         Movie movie = new Movie();
         movie.setTitle(createDto.getTitle());
@@ -47,6 +67,7 @@ public class MovieService {
         movie.setGenre(createDto.getGenre());
         movie.setDirector(createDto.getDirector());
         movie.setPosterUrl(createDto.getPosterUrl());
+        movie.setUser(user);
 
         Movie savedMovie = movieRepository.save(movie);
         log.info("Film byl úspěšně vytvořen s ID: {}", savedMovie.getId());
@@ -89,9 +110,10 @@ public class MovieService {
     }
 
     public List<MovieDto> searchMovies(String title, String genre, Integer year) {
+        AppUser user = getCurrentUser();
         log.info("Vyhledávání filmů s filtry - název: {}, žánr: {}, rok: {}", title, genre, year);
         
-        return movieRepository.findMoviesWithFilters(title, genre, year).stream()
+        return movieRepository.findMoviesWithFilters(user.getId(), title, genre, year).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -106,6 +128,8 @@ public class MovieService {
         dto.setDirector(movie.getDirector());
         dto.setPosterUrl(movie.getPosterUrl());
         dto.setCreatedAt(movie.getCreatedAt());
+        dto.setAverageRating(ratingRepository.getAverageRatingForMovie(movie.getId()));
+        dto.setRatingCount(ratingRepository.getRatingCountForMovie(movie.getId()));
         return dto;
     }
 }

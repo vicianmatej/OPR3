@@ -39,6 +39,10 @@ public class Movie {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser user;
+
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 

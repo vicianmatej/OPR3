@@ -13,4 +13,6 @@ public class MovieDto {
     private String director;
     private String posterUrl;
     private LocalDateTime createdAt;
+    private Double averageRating;
+    private Integer ratingCount;
 }

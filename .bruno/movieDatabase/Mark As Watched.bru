@@ -1,0 +1,20 @@
+meta {
+  name: Mark As Watched
+  type: http
+  seq: 16
+}
+
+patch {
+  url: http://localhost:8081/api/watchlist/1/watched?watched=true
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.watched: eq true
+}

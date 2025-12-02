@@ -1,23 +1,28 @@
 package cz.osu.prf.kip.favouriteLinks.controllers;
 
-import cz.osu.prf.kip.favouriteLinks.dtos.LoginDto;
-import cz.osu.prf.kip.favouriteLinks.dtos.LoginResponseDto;
+import cz.osu.prf.kip.favouriteLinks.dtos.LoginRequest;
+import cz.osu.prf.kip.favouriteLinks.dtos.LoginResponse;
+import cz.osu.prf.kip.favouriteLinks.dtos.RegisterRequest;
 import cz.osu.prf.kip.favouriteLinks.services.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    @PostMapping("/register")
+    public ResponseEntity<LoginResponse> register(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
-    public LoginResponseDto login(@Valid @RequestBody LoginDto loginDto) {
-        return authService.login(loginDto.email(), loginDto.password());
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }

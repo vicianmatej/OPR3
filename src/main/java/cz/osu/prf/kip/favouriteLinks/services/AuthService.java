@@ -1,39 +1,47 @@
 package cz.osu.prf.kip.favouriteLinks.services;
 
-import cz.osu.prf.kip.favouriteLinks.dtos.LoginResponseDto;
+import cz.osu.prf.kip.favouriteLinks.dtos.LoginRequest;
+import cz.osu.prf.kip.favouriteLinks.dtos.LoginResponse;
+import cz.osu.prf.kip.favouriteLinks.dtos.RegisterRequest;
+import cz.osu.prf.kip.favouriteLinks.exceptions.EntityAlreadyExistsException;
+import cz.osu.prf.kip.favouriteLinks.exceptions.UnauthorizedException;
 import cz.osu.prf.kip.favouriteLinks.model.entities.AppUser;
 import cz.osu.prf.kip.favouriteLinks.repositories.AppUserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    private final AppUserRepository appUserRepository;
+    private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public AuthService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.appUserRepository = appUserRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
+    public LoginResponse register(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new EntityAlreadyExistsException(AppUser.class, request.getEmail());
+        }
+
+        AppUser user = new AppUser();
+        user.setEmail(request.getEmail());
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user = userRepository.save(user);
+
+        String token = jwtService.generateToken(user.getEmail());
+        return new LoginResponse(token, user.getEmail(), user.getId());
     }
 
-    public LoginResponseDto login(String email, String password) {
-        Optional<AppUser> appUser = appUserRepository.findByEmail(email);
-        if (appUser.isEmpty()) {
-            throw new RuntimeException("User not found");
+    public LoginResponse login(LoginRequest request) {
+        AppUser user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UnauthorizedException("Neplatné přihlašovací údaje"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new UnauthorizedException("Neplatné přihlašovací údaje");
         }
-        
-        AppUser user = appUser.get();
-        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new RuntimeException("Invalid password");
-        }
-        
+
         String token = jwtService.generateToken(user.getEmail());
-        return new LoginResponseDto(user.getEmail(), token, LocalDateTime.now());
+        return new LoginResponse(token, user.getEmail(), user.getId());
     }
 }

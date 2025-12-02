@@ -65,5 +65,43 @@ export const ratingApi = {
 };
 
 export const authApi = {
-  login: (data: LoginData) => api.post<LoginResponse>('/v1/auth/login', data),
+  login: (data: LoginData) => api.post<LoginResponse>('/auth/login', data),
+  register: (data: LoginData) => api.post<LoginResponse>('/auth/register', data),
+};
+
+interface Review {
+  id: number;
+  reviewText: string;
+  movieId: number;
+  movieTitle: string;
+  createdAt: string;
+}
+
+interface ReviewCreate {
+  reviewText: string;
+  movieId: number;
+}
+
+interface WatchlistItem {
+  id: number;
+  movieId: number;
+  movieTitle: string;
+  posterUrl?: string;
+  watched: boolean;
+  addedAt: string;
+}
+
+export const reviewApi = {
+  getByMovie: (movieId: number) => api.get<Review[]>(`/reviews/movie/${movieId}`),
+  getMy: () => api.get<Review[]>('/reviews/my'),
+  create: (data: ReviewCreate) => api.post<Review>('/reviews', data),
+  delete: (id: number) => api.delete(`/reviews/${id}`),
+};
+
+export const watchlistApi = {
+  getMy: () => api.get<WatchlistItem[]>('/watchlist'),
+  add: (movieId: number) => api.post<WatchlistItem>(`/watchlist/${movieId}`),
+  remove: (movieId: number) => api.delete(`/watchlist/${movieId}`),
+  markWatched: (movieId: number, watched: boolean) => 
+    api.patch<WatchlistItem>(`/watchlist/${movieId}/watched`, null, { params: { watched } }),
 };
