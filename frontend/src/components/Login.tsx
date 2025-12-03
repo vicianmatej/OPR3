@@ -24,34 +24,143 @@ export default function Login({ onLogin, onSwitchToRegister }: Props) {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '2rem auto', padding: '2rem', border: '1px solid #ccc', borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
-      <h2>Přihlášení</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ display: 'block', margin: '0.5rem 0', padding: '0.5rem', width: '100%' }}
-        />
-        <input
-          type="password"
-          placeholder="Heslo"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ display: 'block', margin: '0.5rem 0', padding: '0.5rem', width: '100%' }}
-        />
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" style={{ padding: '0.5rem 1rem', marginTop: '0.5rem', width: '100%' }}>Přihlásit</button>
-      </form>
-      <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-        Nemáte účet?{' '}
-        <button onClick={onSwitchToRegister} style={{ background: 'none', border: 'none', color: '#646cff', cursor: 'pointer', textDecoration: 'underline' }}>
-          Registrovat se
-        </button>
-      </p>
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Cg fill-opacity=\'0.03\'%3E%3Cpolygon fill=\'%23000\' points=\'50 0 60 40 100 50 60 60 50 100 40 60 0 50 40 40\'/%3E%3C/g%3E%3C/svg%3E")',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px'
+    }}>
+      <div style={{
+        background: 'rgba(0,0,0,0.75)',
+        borderRadius: '4px',
+        padding: '60px 68px 40px',
+        width: '100%',
+        maxWidth: '450px',
+        minHeight: '660px'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h1 style={{ 
+            color: '#e50914',
+            fontSize: '36px',
+            fontWeight: '900',
+            letterSpacing: '2px',
+            marginBottom: '8px'
+          }}>CINEHUB</h1>
+          <p style={{ color: '#999', fontSize: '16px', margin: 0 }}>Váš filmový svět</p>
+        </div>
+        
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '16px' }}>
+            <input
+              type="email"
+              placeholder="Email nebo telefonní číslo"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={{ 
+                width: '100%',
+                height: '50px',
+                padding: '16px 20px 0',
+                background: '#333',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                fontSize: '16px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'background-color 0.15s ease'
+              }}
+              onFocus={(e) => e.target.style.background = '#454545'}
+              onBlur={(e) => e.target.style.background = '#333'}
+            />
+          </div>
+          
+          <div style={{ marginBottom: '16px' }}>
+            <input
+              type="password"
+              placeholder="Heslo"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{ 
+                width: '100%',
+                height: '50px',
+                padding: '16px 20px 0',
+                background: '#333',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                fontSize: '16px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'background-color 0.15s ease'
+              }}
+              onFocus={(e) => e.target.style.background = '#454545'}
+              onBlur={(e) => e.target.style.background = '#333'}
+            />
+          </div>
+          
+          {error && <div style={{ 
+            color: '#e87c03', 
+            fontSize: '13px', 
+            marginBottom: '16px',
+            padding: '6px 3px'
+          }}>{error}</div>}
+          
+          <button 
+            type="submit" 
+            style={{ 
+              width: '100%',
+              height: '48px',
+              background: 'linear-gradient(45deg, #e50914, #f40612)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              marginTop: '24px',
+              position: 'relative',
+              overflow: 'hidden',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px 0 rgba(229, 9, 20, 0.3)'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 8px 25px 0 rgba(229, 9, 20, 0.4)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 15px 0 rgba(229, 9, 20, 0.3)';
+            }}
+          >
+            Přihlásit se
+          </button>
+        </form>
+        
+        <div style={{ marginTop: '16px', textAlign: 'center' }}>
+          <span style={{ color: '#737373', fontSize: '16px' }}>
+            Jste na MovieDB noví?{' '}
+            <button 
+              onClick={onSwitchToRegister} 
+              style={{ 
+                background: 'none', 
+                border: 'none', 
+                color: '#fff', 
+                cursor: 'pointer',
+                fontSize: '16px',
+                textDecoration: 'none'
+              }}
+              onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+              onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+            >
+              Zaregistrujte se
+            </button>
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

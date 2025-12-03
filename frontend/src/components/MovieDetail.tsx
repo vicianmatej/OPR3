@@ -1,6 +1,25 @@
 import { useEffect, useState } from 'react';
-import { Movie, Review } from '../types';
 import { movieApi, reviewApi, watchlistApi } from '../services/api';
+
+interface Movie {
+  id: number;
+  title: string;
+  description?: string;
+  releaseYear?: number;
+  genre?: string;
+  director?: string;
+  posterUrl?: string;
+  averageRating?: number;
+  ratingCount?: number;
+}
+
+interface Review {
+  id: number;
+  reviewText: string;
+  movieId: number;
+  movieTitle: string;
+  createdAt: string;
+}
 
 interface MovieDetailProps {
   movieId: number;

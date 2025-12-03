@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Review } from '../types';
 import { reviewApi } from '../services/api';
+
+interface Review {
+  id: number;
+  reviewText: string;
+  movieId: number;
+  movieTitle: string;
+  createdAt: string;
+}
 
 export default function MyReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
