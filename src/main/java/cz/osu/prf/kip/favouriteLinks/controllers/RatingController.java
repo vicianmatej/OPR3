@@ -32,10 +32,23 @@ public class RatingController {
         return ResponseEntity.ok(average);
     }
 
+    @GetMapping("/user/{userId}/movie/{movieId}")
+    public ResponseEntity<Integer> getUserRating(@PathVariable Long userId, @PathVariable Long movieId) {
+        log.info("GET /api/ratings/user/{}/movie/{} - Načítání hodnocení uživatele", userId, movieId);
+        Integer score = ratingService.getUserRating(userId, movieId);
+        return score != null ? ResponseEntity.ok(score) : ResponseEntity.notFound().build();
+    }
+
     @DeleteMapping("/user/{userId}/movie/{movieId}")
     public ResponseEntity<Void> deleteRating(@PathVariable Long userId, @PathVariable Long movieId) {
         log.info("DELETE /api/ratings/user/{}/movie/{} - Mazání hodnocení", userId, movieId);
         ratingService.deleteRating(userId, movieId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<?> getMyRatings() {
+        log.info("GET /api/ratings/my - Načítání mých hodnocení");
+        return ResponseEntity.ok(ratingService.getMyRatings());
     }
 }

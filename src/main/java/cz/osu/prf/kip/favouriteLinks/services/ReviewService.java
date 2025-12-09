@@ -8,6 +8,7 @@ import cz.osu.prf.kip.favouriteLinks.model.entities.Review;
 import cz.osu.prf.kip.favouriteLinks.repositories.AppUserRepository;
 import cz.osu.prf.kip.favouriteLinks.repositories.MovieRepository;
 import cz.osu.prf.kip.favouriteLinks.repositories.ReviewRepository;
+import cz.osu.prf.kip.favouriteLinks.repositories.RatingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final MovieRepository movieRepository;
     private final AppUserRepository userRepository;
+    private final RatingRepository ratingRepository;
 
     private AppUser getCurrentUser() {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -41,9 +43,33 @@ public class ReviewService {
 
     public List<ReviewDto> getMyReviews() {
         AppUser user = getCurrentUser();
-        return reviewRepository.findByUserId(user.getId()).stream()
+        
+        List<ReviewDto> result = new java.util.ArrayList<>();
+        
+        // Přidat recenze s textem
+        result.addAll(reviewRepository.findByUserId(user.getId()).stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+        
+        // Přidat hodnocení bez recenzí
+        java.util.Set<Long> reviewedMovieIds = reviewRepository.findByUserId(user.getId()).stream()
+                .map(r -> r.getMovie().getId())
+                .collect(Collectors.toSet());
+        
+        ratingRepository.findByUserId(user.getId()).stream()
+                .filter(rating -> !reviewedMovieIds.contains(rating.getMovie().getId()))
+                .forEach(rating -> {
+                    ReviewDto dto = new ReviewDto();
+                    dto.setId(rating.getId());
+                    dto.setReviewText("");
+                    dto.setMovieId(rating.getMovie().getId());
+                    dto.setMovieTitle(rating.getMovie().getTitle());
+                    dto.setCreatedAt(rating.getCreatedAt());
+                    dto.setUserRating(rating.getScore());
+                    result.add(dto);
+                });
+        
+        return result;
     }
 
     public ReviewDto createReview(ReviewCreateDto createDto) {
@@ -71,6 +97,11 @@ public class ReviewService {
         dto.setMovieId(review.getMovie().getId());
         dto.setMovieTitle(review.getMovie().getTitle());
         dto.setCreatedAt(review.getCreatedAt());
+        
+        // Načtení hodnocení uživatele pro tento film
+        ratingRepository.findByUserIdAndMovieId(review.getUser().getId(), review.getMovie().getId())
+                .ifPresent(rating -> dto.setUserRating(rating.getScore()));
+        
         return dto;
     }
 }

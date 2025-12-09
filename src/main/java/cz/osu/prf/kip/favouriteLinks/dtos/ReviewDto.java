@@ -10,4 +10,5 @@ public class ReviewDto {
     private Long movieId;
     private String movieTitle;
     private LocalDateTime createdAt;
+    private Integer userRating;
 }

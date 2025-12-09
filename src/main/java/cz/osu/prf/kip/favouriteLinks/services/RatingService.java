@@ -7,6 +7,7 @@ import cz.osu.prf.kip.favouriteLinks.model.entities.AppUser;
 import cz.osu.prf.kip.favouriteLinks.repositories.AppUserRepository;
 import cz.osu.prf.kip.favouriteLinks.repositories.MovieRepository;
 import cz.osu.prf.kip.favouriteLinks.repositories.RatingRepository;
+import cz.osu.prf.kip.favouriteLinks.repositories.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class RatingService {
     private final RatingRepository ratingRepository;
     private final AppUserRepository appUserRepository;
     private final MovieRepository movieRepository;
+    private final ReviewRepository reviewRepository;
 
     public Rating createOrUpdateRating(RatingCreateDto createDto) {
         log.info("Vytváření/aktualizace hodnocení pro film ID: {} od uživatele ID: {}", 
@@ -92,5 +94,40 @@ public class RatingService {
         
         ratingRepository.delete(rating);
         log.info("Hodnocení bylo úspěšně smazáno");
+    }
+
+    public Integer getUserRating(Long userId, Long movieId) {
+        log.info("Načítání hodnocení pro film ID: {} od uživatele ID: {}", movieId, userId);
+        
+        Optional<Rating> rating = ratingRepository.findByUserIdAndMovieId(userId, movieId);
+        return rating.map(Rating::getScore).orElse(null);
+    }
+
+    public java.util.List<java.util.Map<String, Object>> getMyRatings() {
+        String email = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        AppUser user = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Uživatel nebyl nalezen"));
+        
+        java.util.List<Rating> ratings = ratingRepository.findByUserId(user.getId());
+        java.util.List<cz.osu.prf.kip.favouriteLinks.model.entities.Review> reviews = 
+            reviewRepository.findByUserId(user.getId());
+        
+        java.util.Set<Long> reviewedMovieIds = reviews.stream()
+            .map(r -> r.getMovie().getId())
+            .collect(java.util.stream.Collectors.toSet());
+        
+        return ratings.stream()
+                .filter(rating -> !reviewedMovieIds.contains(rating.getMovie().getId()))
+                .map(rating -> {
+                    java.util.Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("id", rating.getId());
+                    map.put("score", rating.getScore());
+                    map.put("movieId", rating.getMovie().getId());
+                    map.put("movieTitle", rating.getMovie().getTitle());
+                    map.put("posterUrl", rating.getMovie().getPosterUrl());
+                    map.put("createdAt", rating.getCreatedAt());
+                    return map;
+                })
+                .collect(java.util.stream.Collectors.toList());
     }
 }

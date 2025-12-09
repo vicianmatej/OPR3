@@ -20,8 +20,14 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userEmail');
     setToken(null);
   };
+
+  const isAdmin = localStorage.getItem('userRole') === 'ADMIN';
+  const userEmail = localStorage.getItem('userEmail') || '';
+  const username = userEmail.split('@')[0];
 
   if (!token) {
     return showRegister ? (
@@ -34,27 +40,33 @@ function App() {
   return (
     <div style={{ 
       minHeight: '100vh',
-      background: '#141414',
+      background: '#0a0a0a',
       color: '#fff'
     }}>
       <nav style={{
-        background: 'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 100%)',
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%)',
         padding: '20px 4%',
-        position: 'sticky',
+        position: 'fixed',
         top: 0,
+        left: 0,
+        right: 0,
         zIndex: 100,
-        borderBottom: '1px solid rgba(255,255,255,0.1)'
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
           <h1 style={{ 
             margin: 0, 
-            color: '#e50914', 
             fontSize: '28px', 
             fontWeight: '900',
             letterSpacing: '1px'
-          }}>CINEHUB</h1>
+          }}>
+            <span style={{ color: '#e50914' }}>CINE</span>
+            <span style={{ color: '#fff' }}>HUB</span>
+          </h1>
           
-          <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '24px' }}>
             {[
               { key: 'movies', label: 'Filmy' },
               { key: 'watchlist', label: 'Můj seznam' },
@@ -66,60 +78,131 @@ function App() {
                 style={{ 
                   background: 'none',
                   border: 'none',
-                  color: activeTab === tab.key ? '#fff' : '#e5e5e5',
+                  color: activeTab === tab.key ? '#fff' : '#999',
                   cursor: 'pointer',
                   fontSize: '14px',
-                  fontWeight: activeTab === tab.key ? '700' : '400',
-                  transition: 'color 0.4s',
-                  padding: '8px 0',
-                  position: 'relative'
-                }}
-                onMouseOver={(e) => {
-                  if (activeTab !== tab.key) e.target.style.color = '#b3b3b3';
-                }}
-                onMouseOut={(e) => {
-                  if (activeTab !== tab.key) e.target.style.color = '#e5e5e5';
+                  fontWeight: activeTab === tab.key ? '600' : '400',
+                  transition: 'color 0.3s'
                 }}
               >
                 {tab.label}
               </button>
             ))}
-            
-            <button 
-              onClick={handleLogout} 
-              style={{ 
-                padding: '10px 20px',
-                background: 'linear-gradient(45deg, #e50914, #f40612)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '600',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 4px 15px 0 rgba(229, 9, 20, 0.3)'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 8px 25px 0 rgba(229, 9, 20, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 15px 0 rgba(229, 9, 20, 0.3)';
-              }}
-            >
-              Odhlásit se
-            </button>
           </div>
+        </div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
+          <span style={{ color: '#fff', fontSize: '14px' }}>{username}</span>
+          <style>{`
+            .logout-button {
+              position: relative;
+              padding: 12px 35px;
+              background: #e50914;
+              font-size: 14px;
+              font-weight: 600;
+              text-decoration: none;
+              text-transform: uppercase;
+              overflow: hidden;
+              transition: 0.5s;
+              letter-spacing: 1px;
+              border-radius: 8px;
+              border: none;
+              color: #fff;
+              cursor: pointer;
+            }
+            .logout-button:hover {
+              background: #e50914;
+              color: #fff;
+              box-shadow: 0 0 5px #e50914, 0 0 25px #e50914, 0 0 50px #e50914, 0 0 100px #e50914;
+            }
+            .logout-button span {
+              position: absolute;
+              display: block;
+            }
+            .logout-button span:nth-child(1) {
+              top: 0;
+              left: -100%;
+              width: 100%;
+              height: 2px;
+              background: linear-gradient(90deg, transparent, #e50914);
+              animation: btn-anim1 1.5s linear infinite;
+            }
+            @keyframes btn-anim1 {
+              0% {
+                left: -100%;
+              }
+              50%, 100% {
+                left: 100%;
+              }
+            }
+            .logout-button span:nth-child(2) {
+              top: -100%;
+              right: 0;
+              width: 2px;
+              height: 100%;
+              background: linear-gradient(180deg, transparent, #e50914);
+              animation: btn-anim2 1.5s linear infinite;
+              animation-delay: 0.375s;
+            }
+            @keyframes btn-anim2 {
+              0% {
+                top: -100%;
+              }
+              50%, 100% {
+                top: 100%;
+              }
+            }
+            .logout-button span:nth-child(3) {
+              bottom: 0;
+              right: -100%;
+              width: 100%;
+              height: 2px;
+              background: linear-gradient(270deg, transparent, #e50914);
+              animation: btn-anim3 1.5s linear infinite;
+              animation-delay: 0.75s;
+            }
+            @keyframes btn-anim3 {
+              0% {
+                right: -100%;
+              }
+              50%, 100% {
+                right: 100%;
+              }
+            }
+            .logout-button span:nth-child(4) {
+              bottom: -100%;
+              left: 0;
+              width: 2px;
+              height: 100%;
+              background: linear-gradient(360deg, transparent, #e50914);
+              animation: btn-anim4 1.5s linear infinite;
+              animation-delay: 1.125s;
+            }
+            @keyframes btn-anim4 {
+              0% {
+                bottom: -100%;
+              }
+              50%, 100% {
+                bottom: 100%;
+              }
+            }
+          `}</style>
+          <button onClick={handleLogout} className="logout-button">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Odhlásit se
+          </button>
         </div>
       </nav>
 
-      <div style={{ padding: '40px 4%' }}>
+      <div style={{ paddingTop: '80px' }}>
         {activeTab === 'movies' && (
           <>
             <MovieSearch onSearch={(title, genre, year) => setSearchParams({ title, genre, year })} />
-            <MovieList key={refresh} userId={1} searchParams={searchParams} />
-            <MovieForm onSuccess={() => setRefresh(refresh + 1)} />
+            <MovieList key={refresh} userId={1} searchParams={searchParams} onClearSearch={() => setSearchParams(undefined)} />
+            {isAdmin && <MovieForm onSuccess={() => setRefresh(refresh + 1)} />}
           </>
         )}
         {activeTab === 'watchlist' && <Watchlist />}

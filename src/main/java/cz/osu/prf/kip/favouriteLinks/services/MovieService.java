@@ -27,21 +27,21 @@ public class MovieService {
     private final RatingRepository ratingRepository;
 
     private AppUser getCurrentUser() {
-        try {
-            String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            return userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Uživatel nebyl nalezen"));
-        } catch (Exception e) {
-            // Pokud není přihlášený, vrátíme prvního uživatele (pro testování)
-            return userRepository.findById(1L)
-                    .orElseThrow(() -> new RuntimeException("Žádný uživatel v databázi"));
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Uživatel nebyl nalezen"));
+    }
+
+    private void checkAdminRole() {
+        AppUser user = getCurrentUser();
+        if (!"ADMIN".equals(user.getRole())) {
+            throw new RuntimeException("Přístup odepřen - vyžadována role ADMIN");
         }
     }
 
     public List<MovieDto> getAllMovies() {
-        AppUser user = getCurrentUser();
-        log.info("Načítání filmů pro uživatele: {}", user.getEmail());
-        return movieRepository.findByUserId(user.getId()).stream()
+        log.info("Načítání všech filmů");
+        return movieRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -57,8 +57,9 @@ public class MovieService {
     }
 
     public MovieDto createMovie(MovieCreateDto createDto) {
+        checkAdminRole();
         AppUser user = getCurrentUser();
-        log.info("Vytváření nového filmu: {} pro uživatele: {}", createDto.getTitle(), user.getEmail());
+        log.info("Vytváření nového filmu: {} administrátorem: {}", createDto.getTitle(), user.getEmail());
         
         Movie movie = new Movie();
         movie.setTitle(createDto.getTitle());
@@ -76,6 +77,7 @@ public class MovieService {
     }
 
     public MovieDto updateMovie(Long id, MovieCreateDto updateDto) {
+        checkAdminRole();
         log.info("Aktualizace filmu s ID: {}", id);
         
         Movie movie = movieRepository.findById(id)
@@ -98,6 +100,7 @@ public class MovieService {
     }
 
     public void deleteMovie(Long id) {
+        checkAdminRole();
         log.info("Mazání filmu s ID: {}", id);
         
         if (!movieRepository.existsById(id)) {
@@ -110,10 +113,12 @@ public class MovieService {
     }
 
     public List<MovieDto> searchMovies(String title, String genre, Integer year) {
-        AppUser user = getCurrentUser();
         log.info("Vyhledávání filmů s filtry - název: {}, žánr: {}, rok: {}", title, genre, year);
         
-        return movieRepository.findMoviesWithFilters(user.getId(), title, genre, year).stream()
+        return movieRepository.findAll().stream()
+                .filter(m -> (title == null || m.getTitle().toLowerCase().contains(title.toLowerCase())))
+                .filter(m -> (genre == null || (m.getGenre() != null && m.getGenre().toLowerCase().contains(genre.toLowerCase()))))
+                .filter(m -> (year == null || (m.getReleaseYear() != null && m.getReleaseYear().equals(year))))
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }

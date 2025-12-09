@@ -8,6 +8,7 @@ interface Props {
 
 export default function Register({ onRegister, onSwitchToLogin }: Props) {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -15,7 +16,7 @@ export default function Register({ onRegister, onSwitchToLogin }: Props) {
     e.preventDefault();
     setError('');
     try {
-      await authApi.register({ email, password });
+      await authApi.register({ email, username, password });
       alert('Registrace úspěšná! Nyní se přihlašte.');
       onSwitchToLogin();
     } catch (err: any) {
@@ -26,96 +27,165 @@ export default function Register({ onRegister, onSwitchToLogin }: Props) {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Cg fill-opacity=\'0.03\'%3E%3Cpolygon fill=\'%23000\' points=\'50 0 60 40 100 50 60 60 50 100 40 60 0 50 40 40\'/%3E%3C/g%3E%3C/svg%3E")',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px'
     }}>
       <div style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '20px',
-        padding: '40px',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+        background: 'rgba(0,0,0,0.75)',
+        borderRadius: '4px',
+        padding: '60px 68px 40px',
         width: '100%',
-        maxWidth: '400px',
-        border: '1px solid rgba(255,255,255,0.2)'
+        maxWidth: '450px',
+        minHeight: '660px'
       }}>
-        <h2 style={{ 
-          textAlign: 'center', 
-          marginBottom: '30px', 
-          color: '#333',
-          fontSize: '28px',
-          fontWeight: '600'
-        }}>Registrace</h2>
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h1 style={{ 
+            color: '#e50914',
+            fontSize: '36px',
+            fontWeight: '900',
+            letterSpacing: '2px',
+            marginBottom: '8px'
+          }}>CINEHUB</h1>
+          <p style={{ color: '#999', fontSize: '16px', margin: 0 }}>Vytvořte si účet</p>
+        </div>
         <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+          <div style={{ marginBottom: '16px' }}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={{ 
+                width: '100%',
+                height: '50px',
+                padding: '16px 20px 0',
+                background: '#333',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                fontSize: '16px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'background-color 0.15s ease'
+              }}
+              onFocus={(e) => e.target.style.background = '#454545'}
+              onBlur={(e) => e.target.style.background = '#333'}
+            />
+          </div>
+          
+          <div style={{ marginBottom: '16px' }}>
+            <input
+              type="text"
+              placeholder="Uživatelské jméno"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              minLength={3}
+              maxLength={50}
+              style={{ 
+                width: '100%',
+                height: '50px',
+                padding: '16px 20px 0',
+                background: '#333',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                fontSize: '16px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'background-color 0.15s ease'
+              }}
+              onFocus={(e) => e.target.style.background = '#454545'}
+              onBlur={(e) => e.target.style.background = '#333'}
+            />
+          </div>
+          
+          <div style={{ marginBottom: '16px' }}>
+            <input
+              type="password"
+              placeholder="Heslo"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              style={{ 
+                width: '100%',
+                height: '50px',
+                padding: '16px 20px 0',
+                background: '#333',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                fontSize: '16px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'background-color 0.15s ease'
+              }}
+              onFocus={(e) => e.target.style.background = '#454545'}
+              onBlur={(e) => e.target.style.background = '#333'}
+            />
+          </div>
+          {error && <div style={{ 
+            color: '#e87c03', 
+            fontSize: '13px', 
+            marginBottom: '16px',
+            padding: '6px 3px'
+          }}>{error}</div>}
+          
+          <button 
+            type="submit" 
             style={{ 
               width: '100%',
-              padding: '15px 20px',
-              margin: '10px 0',
-              border: '2px solid #e1e5e9',
-              borderRadius: '12px',
+              height: '48px',
+              background: 'linear-gradient(45deg, #e50914, #f40612)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
               fontSize: '16px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              marginTop: '24px',
+              position: 'relative',
+              overflow: 'hidden',
               transition: 'all 0.3s ease',
-              outline: 'none',
-              boxSizing: 'border-box'
+              boxShadow: '0 4px 15px 0 rgba(229, 9, 20, 0.3)'
             }}
-          />
-          <input
-            type="password"
-            placeholder="Heslo (min. 6 znaků)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            style={{ 
-              width: '100%',
-              padding: '15px 20px',
-              margin: '10px 0',
-              border: '2px solid #e1e5e9',
-              borderRadius: '12px',
-              fontSize: '16px',
-              transition: 'all 0.3s ease',
-              outline: 'none',
-              boxSizing: 'border-box'
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 8px 25px 0 rgba(229, 9, 20, 0.4)';
             }}
-          />
-          {error && <p style={{ color: '#e74c3c', textAlign: 'center', margin: '15px 0' }}>{error}</p>}
-          <button type="submit" style={{ 
-            width: '100%',
-            padding: '15px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '12px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'transform 0.2s ease',
-            marginTop: '20px'
-          }}>Registrovat</button>
-        </form>
-        <p style={{ marginTop: '25px', textAlign: 'center', color: '#666' }}>
-          Už máte účet?{' '}
-          <button onClick={onSwitchToLogin} style={{ 
-            background: 'none', 
-            border: 'none', 
-            color: '#667eea', 
-            cursor: 'pointer', 
-            textDecoration: 'underline',
-            fontSize: '16px',
-            fontWeight: '500'
-          }}>
-            Přihlásit se
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px 0 rgba(229, 9, 20, 0.3)';
+            }}
+          >
+            Registrovat
           </button>
-        </p>
+        </form>
+        <div style={{ marginTop: '16px', textAlign: 'center' }}>
+          <span style={{ color: '#737373', fontSize: '16px' }}>
+            Už máte účet?{' '}
+            <button 
+              onClick={onSwitchToLogin} 
+              style={{ 
+                background: 'none', 
+                border: 'none', 
+                color: '#fff', 
+                cursor: 'pointer',
+                fontSize: '16px',
+                textDecoration: 'none'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+              onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+            >
+              Přihláste se
+            </button>
+          </span>
+        </div>
       </div>
     </div>
   );

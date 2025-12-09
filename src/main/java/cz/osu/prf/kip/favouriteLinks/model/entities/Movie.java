@@ -1,9 +1,11 @@
 package cz.osu.prf.kip.favouriteLinks.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,15 +44,19 @@ public class Movie {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private AppUser user;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Rating> ratings;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Watchlist> watchlistItems;
 
     @PrePersist

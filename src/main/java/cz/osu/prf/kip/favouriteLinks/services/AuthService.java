@@ -23,14 +23,19 @@ public class AuthService {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new EntityAlreadyExistsException(AppUser.class, request.getEmail());
         }
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new EntityAlreadyExistsException(AppUser.class, request.getUsername());
+        }
 
         AppUser user = new AppUser();
         user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setRole("USER");
         user = userRepository.save(user);
 
         String token = jwtService.generateToken(user.getEmail());
-        return new LoginResponse(token, user.getEmail(), user.getId());
+        return new LoginResponse(token, user.getEmail(), user.getId(), user.getRole());
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -42,6 +47,6 @@ public class AuthService {
         }
 
         String token = jwtService.generateToken(user.getEmail());
-        return new LoginResponse(token, user.getEmail(), user.getId());
+        return new LoginResponse(token, user.getEmail(), user.getId(), user.getRole());
     }
 }

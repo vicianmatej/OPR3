@@ -5,9 +5,17 @@ interface LoginData {
   password: string;
 }
 
+interface RegisterData {
+  email: string;
+  username: string;
+  password: string;
+}
+
 interface LoginResponse {
   token: string;
   email: string;
+  userId: number;
+  role: string;
 }
 
 interface Movie {
@@ -31,9 +39,9 @@ interface MovieCreate {
 }
 
 interface RatingCreate {
-  movieId: number;
+  score: number;
   userId: number;
-  rating: number;
+  movieId: number;
 }
 
 const api = axios.create({
@@ -59,14 +67,39 @@ export const movieApi = {
 };
 
 export const ratingApi = {
-  create: (data: RatingCreate) => api.post('/ratings', data),
+  create: (score: number, movieId: number) => {
+    const userIdStr = localStorage.getItem('userId');
+    const userId = userIdStr ? parseInt(userIdStr, 10) : null;
+    console.log('Rating API - userId:', userId, 'type:', typeof userId);
+    return api.post('/ratings', { score, userId, movieId });
+  },
   getAverage: (movieId: number) => api.get<number>(`/ratings/movie/${movieId}/average`),
+  getUserRating: (userId: number, movieId: number) => api.get<number>(`/ratings/user/${userId}/movie/${movieId}`),
   delete: (userId: number, movieId: number) => api.delete(`/ratings/user/${userId}/movie/${movieId}`),
+  getMy: () => api.get('/ratings/my'),
 };
 
 export const authApi = {
-  login: (data: LoginData) => api.post<LoginResponse>('/auth/login', data),
-  register: (data: LoginData) => api.post<LoginResponse>('/auth/register', data),
+  login: async (data: LoginData) => {
+    const response = await api.post<LoginResponse>('/auth/login', data);
+    if (response.data.userId) {
+      localStorage.setItem('userId', response.data.userId.toString());
+    }
+    if (response.data.role) {
+      localStorage.setItem('userRole', response.data.role);
+    }
+    return response;
+  },
+  register: async (data: RegisterData) => {
+    const response = await api.post<LoginResponse>('/auth/register', data);
+    if (response.data.userId) {
+      localStorage.setItem('userId', response.data.userId.toString());
+    }
+    if (response.data.role) {
+      localStorage.setItem('userRole', response.data.role);
+    }
+    return response;
+  },
 };
 
 interface Review {
@@ -75,6 +108,7 @@ interface Review {
   movieId: number;
   movieTitle: string;
   createdAt: string;
+  userRating?: number;
 }
 
 interface ReviewCreate {

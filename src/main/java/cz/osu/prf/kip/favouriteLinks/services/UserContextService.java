@@ -27,6 +27,15 @@ public class UserContextService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    public boolean isAdmin() {
+        try {
+            AppUser user = getCurrentUser();
+            return "ADMIN".equals(user.getRole());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         
