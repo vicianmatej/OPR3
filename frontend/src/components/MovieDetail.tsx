@@ -249,25 +249,27 @@ export default function MovieDetail({ movieId, onClose }: MovieDetailProps) {
             <strong style={{ color: '#fff' }}>Režisér:</strong> {movie.director}
           </p>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button 
-              onClick={() => setShowDeleteDialog(true)}
-              style={{
-                padding: '12px 24px',
-                background: '#e50914',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s',
-                boxShadow: '0 4px 15px rgba(229, 9, 20, 0.4)'
-              }}
-            >
-              Smazat film
-            </button>
-          </div>
+          {localStorage.getItem('userRole') === 'ADMIN' && (
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button 
+                onClick={() => setShowDeleteDialog(true)}
+                style={{
+                  padding: '12px 24px',
+                  background: '#e50914',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  boxShadow: '0 4px 15px rgba(229, 9, 20, 0.4)'
+                }}
+              >
+                Smazat film
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

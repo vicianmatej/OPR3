@@ -15,7 +15,10 @@ function App() {
   const [activeTab, setActiveTab] = useState<'movies' | 'watchlist' | 'reviews'>('movies');
 
   useEffect(() => {
-    localStorage.removeItem('token');
+    const savedToken = localStorage.getItem('token');
+    if (savedToken) {
+      setToken(savedToken);
+    }
   }, []);
 
   const handleLogout = () => {
@@ -92,7 +95,6 @@ function App() {
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
-          <span style={{ color: '#fff', fontSize: '14px' }}>{username}</span>
           <style>{`
             .logout-button {
               position: relative;
@@ -187,6 +189,7 @@ function App() {
               }
             }
           `}</style>
+          <span style={{ color: '#fff', fontSize: '16px', fontWeight: '600' }}>{username}</span>
           <button onClick={handleLogout} className="logout-button">
             <span></span>
             <span></span>

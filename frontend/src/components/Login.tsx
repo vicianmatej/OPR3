@@ -17,6 +17,9 @@ export default function Login({ onLogin, onSwitchToRegister }: Props) {
     try {
       const { data } = await authApi.login({ email, password });
       localStorage.setItem('token', data.token);
+      localStorage.setItem('userEmail', email);
+      localStorage.setItem('userRole', data.role || 'USER');
+      localStorage.setItem('userId', data.userId);
       onLogin(data.token);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Neplatné přihlašovací údaje');
