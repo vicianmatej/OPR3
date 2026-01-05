@@ -29,13 +29,15 @@ interface MovieDetailProps {
 }
 
 export default function MovieDetail({ movieId, onClose }: MovieDetailProps) {
-  const [movie, setMovie] = useState<Movie | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [newReview, setNewReview] = useState('');
-  const [userRating, setUserRating] = useState(0);
-  const [hoveredStar, setHoveredStar] = useState(0);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [toast, setToast] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
+  const [movie, setMovie] = useState<Movie | null>(null); // Data filmu
+  const [reviews, setReviews] = useState<Review[]>([]); // Seznam recenzí
+  const [newReview, setNewReview] = useState(''); // Text nové recenze
+  const [userRating, setUserRating] = useState(0); // Hodnocení uživatele
+  const [hoveredStar, setHoveredStar] = useState(0); // Hvězdička přes kterou je myš
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false); // Zobrazit dialog pro smazání
+  const [isEditing, setIsEditing] = useState(false); // Režim úprav
+  const [editData, setEditData] = useState<any>({}); // Data pro úpravu
+  const [toast, setToast] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null); // Notifikace
 
   useEffect(() => {
     loadMovie();
@@ -69,7 +71,6 @@ export default function MovieDetail({ movieId, onClose }: MovieDetailProps) {
       const response = await ratingApi.getUserRating(userId, movieId);
       setUserRating(response.data);
     } catch (error) {
-      // Uživatel ještě neohodnotil film
       setUserRating(0);
     }
   };
@@ -84,6 +85,30 @@ export default function MovieDetail({ movieId, onClose }: MovieDetailProps) {
     } catch (error) {
       console.error('Chyba při přidávání recenze:', error);
       setToast({ message: 'Chyba při přidávání recenze', type: 'error' });
+    }
+  };
+
+  const handleEdit = () => {
+    setEditData({
+      title: movie?.title || '',
+      description: movie?.description || '',
+      releaseYear: movie?.releaseYear || '',
+      genre: movie?.genre || '',
+      director: movie?.director || '',
+      posterUrl: movie?.posterUrl || ''
+    });
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      await movieApi.update(movieId, editData);
+      setIsEditing(false);
+      loadMovie();
+      setToast({ message: 'Film byl úspěšně aktualizován', type: 'success' });
+    } catch (error) {
+      console.error('Chyba při aktualizaci filmu:', error);
+      setToast({ message: 'Chyba při aktualizaci filmu', type: 'error' });
     }
   };
 
@@ -173,12 +198,30 @@ export default function MovieDetail({ movieId, onClose }: MovieDetailProps) {
         </div>
 
         <div>
-          <h1 style={{ 
-            color: '#fff', 
-            fontSize: '36px',
-            marginBottom: '10px',
-            fontWeight: '700'
-          }}>{movie.title}</h1>
+          {isEditing ? (
+            <input
+              value={editData.title}
+              onChange={(e) => setEditData({...editData, title: e.target.value})}
+              style={{
+                width: '100%',
+                padding: '10px',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.3)',
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '36px',
+                fontWeight: '700',
+                marginBottom: '10px'
+              }}
+            />
+          ) : (
+            <h1 style={{ 
+              color: '#fff', 
+              fontSize: '36px',
+              marginBottom: '10px',
+              fontWeight: '700'
+            }}>{movie.title}</h1>
+          )}
 
           <div style={{ 
             display: 'flex', 
@@ -238,36 +281,161 @@ export default function MovieDetail({ movieId, onClose }: MovieDetailProps) {
             </div>
           </div>
 
-          <p style={{ 
-            color: '#ccc',
-            fontSize: '16px',
-            lineHeight: '1.6',
-            marginBottom: '20px'
-          }}>{movie.description}</p>
+          {isEditing ? (
+            <>
+              <textarea
+                value={editData.description}
+                onChange={(e) => setEditData({...editData, description: e.target.value})}
+                rows={4}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  fontSize: '16px',
+                  marginBottom: '10px',
+                  resize: 'vertical'
+                }}
+              />
+              <input
+                placeholder="Režisér"
+                value={editData.director}
+                onChange={(e) => setEditData({...editData, director: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  fontSize: '16px',
+                  marginBottom: '10px'
+                }}
+              />
+              <input
+                placeholder="Žánr"
+                value={editData.genre}
+                onChange={(e) => setEditData({...editData, genre: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  fontSize: '16px',
+                  marginBottom: '10px'
+                }}
+              />
+              <input
+                placeholder="Rok vydání"
+                type="number"
+                value={editData.releaseYear}
+                onChange={(e) => setEditData({...editData, releaseYear: parseInt(e.target.value)})}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  fontSize: '16px',
+                  marginBottom: '30px'
+                }}
+              />
+            </>
+          ) : (
+            <>
+              <p style={{ 
+                color: '#ccc',
+                fontSize: '16px',
+                lineHeight: '1.6',
+                marginBottom: '20px'
+              }}>{movie.description}</p>
 
-          <p style={{ color: '#999', marginBottom: '30px' }}>
-            <strong style={{ color: '#fff' }}>Režisér:</strong> {movie.director}
-          </p>
+              <p style={{ color: '#999', marginBottom: '30px' }}>
+                <strong style={{ color: '#fff' }}>Režisér:</strong> {movie.director}
+              </p>
+            </>
+          )}
 
           {localStorage.getItem('userRole') === 'ADMIN' && (
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button 
-                onClick={() => setShowDeleteDialog(true)}
-                style={{
-                  padding: '12px 24px',
-                  background: '#e50914',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                  boxShadow: '0 4px 15px rgba(229, 9, 20, 0.4)'
-                }}
-              >
-                Smazat film
-              </button>
+              {isEditing ? (
+                <>
+                  <button 
+                    onClick={handleSaveEdit}
+                    style={{
+                      padding: '12px 24px',
+                      background: '#28a745',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s'
+                    }}
+                  >
+                    Uložit
+                  </button>
+                  <button 
+                    onClick={() => setIsEditing(false)}
+                    style={{
+                      padding: '12px 24px',
+                      background: 'rgba(255,255,255,0.1)',
+                      color: 'white',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s'
+                    }}
+                  >
+                    Zrušit
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={handleEdit}
+                    style={{
+                      padding: '12px 24px',
+                      background: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s',
+                      boxShadow: '0 4px 15px rgba(0, 123, 255, 0.4)'
+                    }}
+                  >
+                    Upravit film
+                  </button>
+                  <button 
+                    onClick={() => setShowDeleteDialog(true)}
+                    style={{
+                      padding: '12px 24px',
+                      background: '#e50914',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s',
+                      boxShadow: '0 4px 15px rgba(229, 9, 20, 0.4)'
+                    }}
+                  >
+                    Smazat film
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

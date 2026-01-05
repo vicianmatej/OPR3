@@ -8,11 +8,11 @@ import Watchlist from './components/Watchlist';
 import MyReviews from './components/MyReviews';
 
 function App() {
-  const [refresh, setRefresh] = useState(0);
-  const [searchParams, setSearchParams] = useState<{ title?: string; genre?: string; year?: number }>();
-  const [token, setToken] = useState<string | null>(null);
-  const [showRegister, setShowRegister] = useState(false);
-  const [activeTab, setActiveTab] = useState<'movies' | 'watchlist' | 'reviews'>('movies');
+  const [refresh, setRefresh] = useState(0); // Pro obnovení seznamu filmů
+  const [searchParams, setSearchParams] = useState<{ title?: string; genre?: string; year?: number }>(); // Parametry vyhledávání
+  const [token, setToken] = useState<string | null>(null); // JWT token pro autentizaci
+  const [showRegister, setShowRegister] = useState(false); // Přepínání mezi přihlášením a registrací
+  const [activeTab, setActiveTab] = useState<'movies' | 'watchlist' | 'reviews'>('movies'); // Aktivní záložka
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
@@ -30,7 +30,7 @@ function App() {
 
   const isAdmin = localStorage.getItem('userRole') === 'ADMIN';
   const userEmail = localStorage.getItem('userEmail') || '';
-  const username = userEmail.split('@')[0];
+  const username = userEmail.split('@')[0]; // Získá username z emailu
 
   if (!token) {
     return showRegister ? (

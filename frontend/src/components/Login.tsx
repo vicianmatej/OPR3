@@ -7,9 +7,9 @@ interface Props {
 }
 
 export default function Login({ onLogin, onSwitchToRegister }: Props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState(''); // Email uživatele
+  const [password, setPassword] = useState(''); // Heslo
+  const [error, setError] = useState(''); // Chybová hláška
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,7 +145,7 @@ export default function Login({ onLogin, onSwitchToRegister }: Props) {
         
         <div style={{ marginTop: '16px', textAlign: 'center' }}>
           <span style={{ color: '#737373', fontSize: '16px' }}>
-            Jste na MovieDB noví?{' '}
+            Jste na CineHub noví?{' '}
             <button 
               onClick={onSwitchToRegister} 
               style={{ 

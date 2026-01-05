@@ -23,11 +23,11 @@ interface Props {
 }
 
 export default function MovieList({ userId, searchParams, onClearSearch }: Props) {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
-  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
-  const [toast, setToast] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
+  const [movies, setMovies] = useState<Movie[]>([]); // Seznam filmů
+  const [loading, setLoading] = useState(true); // Indikátor načítání
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null); // Vybraný film pro detail
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null); // Vybraný žánr pro filtrování
+  const [toast, setToast] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null); // Notifikace
 
   useEffect(() => {
     loadMovies();

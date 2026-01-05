@@ -7,14 +7,36 @@ interface Props {
 }
 
 export default function Register({ onRegister, onSwitchToLogin }: Props) {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState(''); // Email uživatele
+  const [username, setUsername] = useState(''); // Uživatelské jméno
+  const [password, setPassword] = useState(''); // Heslo
+  const [confirmPassword, setConfirmPassword] = useState(''); // Potvrzení hesla
+  const [error, setError] = useState(''); // Chybová hláška
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!validateEmail(email)) {
+      setError('Zadejte platný email');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Hesla se neshodují');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Heslo musí mít alespoň 6 znaků');
+      return;
+    }
+
     try {
       await authApi.register({ email, username, password });
       alert('Registrace úspěšná! Nyní se přihlašte.');
@@ -110,6 +132,32 @@ export default function Register({ onRegister, onSwitchToLogin }: Props) {
               placeholder="Heslo"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              style={{ 
+                width: '100%',
+                height: '50px',
+                padding: '16px 20px 0',
+                background: '#333',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#fff',
+                fontSize: '16px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'background-color 0.15s ease'
+              }}
+              onFocus={(e) => e.target.style.background = '#454545'}
+              onBlur={(e) => e.target.style.background = '#333'}
+            />
+          </div>
+
+          <div style={{ marginBottom: '16px' }}>
+            <input
+              type="password"
+              placeholder="Potvrdit heslo"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={6}
               style={{ 
